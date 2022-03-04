@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      default-filters:
+        - TokenRelay
+      routes:
+        - id: gateway
+          uri: http://127.0.0.1:8040
+          predicates:
+            - Path=/api/**
+          filters:
+            - RemoveRequestHeader=Cookie
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            token-uri: http://127.0.0.1:8080/auth/realms/MSA/protocol/openid-connect/token
+            authorization-uri: http://127.0.0.1:8080/auth/realms/MSA/protocol/openid-connect/auth
+            userinfo-uri: http://127.0.0.1:8080/auth/realms/MSA/protocol/openid-connect/userinfo
+            user-name-attribute: preferred_username
+        registration:
+          memberService:
+            provider: keycloak
+            client-id: memberService
+            client-secret: RePeZAfKZ9XFiFc2Z5LzzFstYeduPQSd
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
+          orderService:
+            provider: keycloak
+            client-id: orderService
+            client-secret: svWW0qnxzIIWNKaKXYTaN0iB1GXDxep6
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
+          orderCheckService:
+            provider: keycloak
+            client-id: orderService
+            client-secret: 0iR2ozq2jW3XWgiRBRaTBpFWrcUB9QPu
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
+
+
+
+server.port: 8060
+
+logging.level:
+  org.springframework.cloud.gateway: DEBUG
+  org.springframework.security: DEBUG
+  org.springframework.web.reactive.function.client: TRACE
